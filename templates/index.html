@@ -48,10 +48,10 @@
                 <tbody>
                     {% for expense in expenses %}
                     <tr>
-                        <td>{{ expense.date }}</td>
-                        <td>{{ expense.description }}</td>
-                        <td>{{ expense.category }}</td>
-                        <td>{{ expense.amount }}</td>
+                        <td>{{ expense[1] }}</td>
+                        <td>{{ expense[2] }}</td>
+                        <td>{{ expense[3] }}</td>
+                        <td>{{ expense[4] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
