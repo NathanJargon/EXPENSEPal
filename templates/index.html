@@ -3,60 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Expenses Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px; /* Initially hidden */
+            width: 250px;
+            height: 100%;
+            background-color: #333;
+            color: #fff;
+            transition: left 0.3s ease-in-out; /* Add smooth slide transition */
+            z-index: 999;
+        }
+
+        /* New CSS Class for Transition */
+        .sidebar-visible {
+            left: 0;
+        }
+
+        .sidebar a {
+            margin-top: 10px;
+            padding: 15px;
+            text-decoration: none;
+            color: #fff;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            background-color: #555;
+        }
+        /* Style for the file input */
+        .custom-file-input {
+            display: none; /* Hide the default file input */
+        }
+    
+        .custom-file-label {
+            background-color: #007BFF; /* Change background color for the label */
+            color: #fff; /* Change text color for the label */
+            border: 1px solid #007BFF; /* Add border for the label */
+            border-radius: 5px; /* Add rounded corners */
+            padding: 5px 10px; /* Add padding to the label */
+            cursor: pointer; /* Change cursor on hover */
+        }
+    
+        .custom-file-label::after {
+            content: "Browse"; /* Change the text for the label's pseudo-element */
+        }
+    
+        /* Style for the file input on hover */
+        .custom-file-input:hover + .custom-file-label {
+            background-color: #0056b3; /* Change background color on hover */
+            border-color: #0056b3; /* Change border color on hover */
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="left">
-            <h1 style="margin-bottom: 50px; text-align: center;">Add Expense</h1>
-            <form method="POST">
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <br>
-                    <input type="text" name="description" class="large-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount:</label>
-                    <br>
-                    <input type="number" name="amount" step="0.01" class="large-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="date">Date:</label>
-                    <br>
-                    <input type="date" name="date" class="large-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <br>
-                    <input type="text" name="category" class="large-input" required>
-                </div>
-                <button type="submit">Add Expense</button>
-            </form>
+    <nav class="sidebar col-md-2 d-none d-md-block">
+        <div class="position-sticky">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Expenses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Logout
+                    </a>
+                </li>
+            </ul>
         </div>
-        <div class="right">
-            <h1 style="margin-bottom: 15px; text-align: center;">Expense History</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for expense in expenses %}
-                    <tr>
-                        <td>{{ expense[1] }}</td>
-                        <td>{{ expense[2] }}</td>
-                        <td>{{ expense[3] }}</td>
-                        <td>{{ expense[4] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1 class="mt-4 mb-3 text-center">Add Expense</h1>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" name="description" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount:</label>
+                        <input type="number" name="amount" step="0.01" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <input type="text" name="category" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+                </form>
+                
+                <div class="custom-file mt-3">
+                    <input type="file" id="csvFileInput" accept=".csv" class="custom-file-input">
+                    <label class="custom-file-label" for="csvFileInput">Choose CSV file</label>
+                </div>
+                
+            </div>
+            <div class="col-md-6">
+                <h1 class="mt-4 mb-3 text-center">Expense History</h1>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in expenses %}
+                        <tr>
+                            <td>{{ expense[3] }}</td>
+                            <td>{{ expense[1] }}</td>
+                            <td>{{ expense[4] }}</td>
+                            <td>{{ expense[2] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+    <!-- Bootstrap Scripts (jQuery and Bootstrap JS) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // JavaScript to handle sidebar sliding
+        $(document).ready(function() {
+            const sidebar = $('.sidebar');
+            const threshold = 200; // Adjust this threshold as needed
+
+            $(document).mousemove(function(e) {
+                const mouseX = e.pageX;
+
+                if (mouseX < threshold) {
+                    sidebar.addClass('sidebar-visible');
+                } else {
+                    sidebar.removeClass('sidebar-visible');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
