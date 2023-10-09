@@ -13,6 +13,7 @@ The Personal Finance Tracker is a simple web application designed to help users 
 ### Expense History
 - The application maintains a history of all recorded expenses, allowing users to view and track their spending over time.
 - Users can filter expenses by date or category to gain insights into their financial habits.
+- You can save your expense history and be able to access them the next time you open it in the web.
 
 ### Data Visualization
 - The application includes simple charts and graphs to visualize spending patterns and trends.
