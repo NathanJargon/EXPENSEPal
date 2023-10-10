@@ -17,8 +17,8 @@
         .createUserWithEmailAndPassword(signupEmail.value, signupPassword.value)
         .then((userCredential) => {
           // Sign-up successful, you can now do something with the user data
-          const user = userCredential.user;
-          console.log('Sign-up successful:', user);
+          const user = userCredential.email;
+          //console.log('Sign-up successful:', user);
           signupForm.style.display = 'none';
         })
         .catch((error) => {

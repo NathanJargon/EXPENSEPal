@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const loginForm = document.getElementById('loginOverlay'); 
   const login_Email = document.getElementById('email');
   const login_Password = document.getElementById('password');
+  const login_TextContent = document.getElementById('loginLogoutLink');
 
   loginButton.addEventListener('click', () => {
     const loginEmail = document.getElementById('email').value;
@@ -18,16 +19,21 @@ document.addEventListener('DOMContentLoaded', function () {
       .then((userCredential) => {
         // Login successful, you can now do something with the user data
         const user = userCredential.user;
-        console.log('User:', user);
-        // Update the userName in the top sidebar with the user's Gmail address
+        //console.log('User:', user);
+
         const userNameElement = document.getElementById('userName');
-        if (user) {
-          const userEmail = user.email;
-          console.log('User Email:', userEmail);
-          if (userEmail) {
-            const userName = userEmail.split('@')[0]; // Extract the username part
-            userNameElement.innerHTML = userName;
+        if (userCredential.email) {
+          const userEmail = userCredential.email;
+          //console.log(userCredential.email)
+          let userName = userCredential.email.split('@')[0]; // Extract the username part
+          const maxLength = 10;
+          if (userName.length > maxLength) {
+            userName = userName.slice(0, maxLength) + '...';
+          } else {
+            userName = userName;
           }
+          login_TextContent.textContent = 'Logout';
+          userNameElement.textContent = userName;
         }
 
         console.log('Login successful:', user);
