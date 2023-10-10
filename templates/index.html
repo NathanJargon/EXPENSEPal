@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -50,6 +50,7 @@
         }
     
         .custom-file-label {
+            text-align: center;
             background-color: #007BFF; /* Change background color for the label */
             color: #fff; /* Change text color for the label */
             border: 1px solid #007BFF; /* Add border for the label */
@@ -59,6 +60,7 @@
         }
     
         .custom-file-label::after {
+            opacity: 0;
             content: "Browse"; /* Change the text for the label's pseudo-element */
         }
     
@@ -67,12 +69,84 @@
             background-color: #0056b3; /* Change background color on hover */
             border-color: #0056b3; /* Change border color on hover */
         }
+
+                /* CSS for the overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .overlay-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        #loginOverlay, #signupOverlay {
+            display: none;
+        }
+        @keyframes turnRed {
+            0% {
+                background-color: #fff; /* Start with white background */
+            }
+            50% {
+                background-color: red; /* Change to red at the midpoint of animation */
+            }
+            100% {
+                background-color: #fff; /* End with white background */
+            }
+        }
+        
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            75% {
+                transform: translateX(-5px);
+            }
+            100% {
+                transform: translateX(5px);
+            }
+        }
+
+        #userName{
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
     <nav class="sidebar col-md-2 d-none d-md-block">
         <div class="position-sticky">
             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <span class="nav-link" id="userName">User</span>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link active" href="#">
                         Dashboard
@@ -93,14 +167,52 @@
                         Reports
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        Logout
-                    </a>
-                </li>
+                <li class="nav-item" id="loginLogout">
+                    <a class="nav-link" href="#" id="loginLogoutLink">Login</a>
+                </li>                
             </ul>
         </div>
     </nav>
+
+    <!--Log in-->
+    <div class="overlay" id="loginOverlay">
+        <div class="overlay-content">
+            <h2>Login</h2>
+            <form>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="button" id="login-button" class="btn btn-primary btn-block">Log In</button>
+                <button type="button" id="closeOverlay" class="btn btn-primary btn-block">Close</button>
+                <a class="nav-link" href="#" id="signupLink">No Account, Sign Up</a>
+            </form>
+        </div>
+    </div>
+
+    <!--Sign Up-->
+    <div class="overlay" id="signupOverlay">
+        <div class="overlay-content">
+            <h2>Sign Up</h2>
+            <form>
+                <div class="form-group">
+                    <label for="signupEmail">Email:</label>
+                    <input type="email" id="signupEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password:</label>
+                    <input type="password" id="signupPassword" class="form-control" required>
+                </div>
+                <button type="button" id="signup-button" class="btn btn-success btn-block">Sign Up</button>
+                <button type="button" id="closeSignUpOverlay" class="btn btn-success btn-block">Close</button>
+            </form>
+        </div>
+    </div>
+
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -123,14 +235,16 @@
                         <input type="text" name="category" class="form-control" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+                    <div class="custom-file mt-3">
+                        <input type="file" id="csvFileInput" accept=".csv" class="custom-file-input">
+                        <label class="custom-file-label" for="csvFileInput">Choose CSV file</label>
+                    </div>
+                    
                 </form>
                 
-                <div class="custom-file mt-3">
-                    <input type="file" id="csvFileInput" accept=".csv" class="custom-file-input">
-                    <label class="custom-file-label" for="csvFileInput">Choose CSV file</label>
-                </div>
-                
+
             </div>
+            
             <div class="col-md-6">
                 <h1 class="mt-4 mb-3 text-center">Expense History</h1>
                 <table class="table table-striped">
@@ -156,15 +270,47 @@
             </div>
         </div>
     </div>
-    <!-- Bootstrap Scripts (jQuery and Bootstrap JS) -->
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script> 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="{{ url_for('serve_static', filename='dist/firebase-config.bundle.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/firebase-import.bundle.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/firebase-auth.bundle.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/log-sign-auth.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/userName.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/loginOverlay.js') }}"></script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
+    
+        // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
+    
+        // Add Firebase products that you want to use
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
+        const firebaseConfig = {
+            apiKey: "AIzaSyAN87hqf7cR_Yt6kYlLGKzd89pagAZCIaM",
+            authDomain: "expenses-tracker-6afca.firebaseapp.com",
+            projectId: "expenses-tracker-6afca",
+            storageBucket: "expenses-tracker-6afca.appspot.com",
+            messagingSenderId: "628383826563",
+            appId: "1:628383826563:web:d63c8c7c90b9e477a9d1b6",
+            measurementId: "G-ETLG0J4PFT"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        firebase.initializeApp(firebaseConfig); //Very Important Code
+    </script>
+
     <script>
-        // JavaScript to handle sidebar sliding
         $(document).ready(function() {
             const sidebar = $('.sidebar');
-            const threshold = 200; // Adjust this threshold as needed
+            const threshold = 200;
 
             $(document).mousemove(function(e) {
                 const mouseX = e.pageX;
@@ -177,69 +323,6 @@
             });
         });
     </script>
+    <script src="{{ url_for('serve_static', filename='dist/signupOverlay.js') }}"></script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Expenses Tracker</title>
-</head>
-<body>
-    <div class="container">
-        <div class="left">
-            <h1 style="margin-bottom: 50px; text-align: center;">Add Expense</h1>
-            <form method="POST">
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <br>
-                    <input type="text" name="description" class="large-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount:</label>
-                    <br>
-                    <input type="number" name="amount" step="0.01" class="large-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="date">Date:</label>
-                    <br>
-                    <input type="date" name="date" class="large-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <br>
-                    <input type="text" name="category" class="large-input" required>
-                </div>
-                <button type="submit">Add Expense</button>
-            </form>
-        </div>
-        <div class="right">
-            <h1 style="margin-bottom: 15px; text-align: center;">Expense History</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for expense in expenses %}
-                    <tr>
-                        <td>{{ expense[3] }}</td>
-                        <td>{{ expense[1] }}</td>
-                        <td>{{ expense[4] }}</td>
-                        <td>{{ expense[2] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</body>
-</html>
->>>>>>> 4fa81673175f33b42d6969f4e82bb48b134094f7
