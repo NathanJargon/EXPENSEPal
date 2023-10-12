@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
-
-import sqlite3
+import sqlite3      
 import csv
 from io import StringIO
 
@@ -9,10 +8,10 @@ app = Flask(__name__, static_url_path='/static')
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
-
+    
 def create_database():
     conn = sqlite3.connect('expenses.db')
-    cursor = conn.cursor()
+    cursor = conn.cursor()  
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +33,21 @@ def fetch_expenses():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+@app.route('/delete_expense', methods=['POST'])
+def delete_expense():
+    if request.method == 'POST':
+        expense_id = request.form['expense_id']
+
+        conn = sqlite3.connect('expenses.db')
+        cursor = conn.cursor()
+
+        # Delete the expense with the given ID
+        cursor.execute('DELETE FROM expenses WHERE id = ?', (expense_id,))
+        conn.commit()
+        conn.close()
+
+    return redirect(url_for('index'))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

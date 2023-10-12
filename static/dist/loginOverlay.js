@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
           let userName = userCredential.email.split('@')[0]; // Extract the username part
           const maxLength = 10;
           if (userName.length > maxLength) {
-            userName = userName.slice(0, maxLength) + '...';
+            userName = userName.slice(0, maxLength);
           } else {
             userName = userName;
           }

@@ -5,11 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <title>Expenses Tracker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            /*background-color: #0b0c10;*/
+            background-color: #232b2b;
             margin: 0;
             padding: 0;
         }
@@ -19,10 +21,10 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -250px; /* Initially hidden */
-            width: 250px;
+            left: -400px; /* Initially hidden */
+            width: 400px;
             height: 100%;
-            background-color: #333;
+            background-color: #0b0c10;
             color: #fff;
             transition: left 0.3s ease-in-out; /* Add smooth slide transition */
             z-index: 999;
@@ -95,6 +97,11 @@
             width: 80%;
             max-width: 400px;
         }
+
+        .form-group, .mb-3, th, td{
+            /*color: #c5c6c7;*/
+            color: black;
+        }
         
         #loginOverlay, #signupOverlay {
             display: none;
@@ -137,6 +144,40 @@
             margin-top: 10px;
         }
 
+        .mb-3{
+            text-decoration: underline;
+        }
+
+        /* CSS for the vertical line separator */
+        .vertical-line {
+            border-left: 2px solid #1f2833; /* Adjust the color and thickness as needed */
+            height: 100%; /* Adjust the height to span the entire height of the sections */
+            margin-left: 570px; /* Adjust the margin to control the gap between the sections */
+            position: absolute;
+        }
+        
+        /* Add border and border-radius to the container */
+        .container {
+            border: 1px solid #ccc; /* Add a border */
+            border-radius: 10px; /* Set the border radius to 10px */
+            padding: 20px; /* Add some padding for better appearance */
+            margin-top: 70px;
+
+            /* Add a circle to the upper-left corner */
+            background-image: radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.2) 50%, transparent 50%), 
+                             radial-gradient(circle at 100% 0%, rgba(0, 0, 0, 0.2) 50%, transparent 50%),
+                             radial-gradient(circle at 0% 100%, rgba(0, 0, 0, 0.2) 50%, transparent 50%),
+                             radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.2) 50%, transparent 50%);
+            background-size: 100px 100px; /* Adjust the size of the circles */
+            background-position: 0 0, 100% 0, 0 100%, 100% 100%; /* Position the circles in corners */
+            background-repeat: no-repeat; /* Ensure they don't repeat */
+        }
+
+        /* Style for the delete button to make it smaller */
+        .delete-button-small {
+            padding: 1px 5px; /* Adjust the padding to make the button smaller */
+            font-size: 10px; /* Adjust the font size to make the text smaller */
+        }
     </style>
 </head>
 <body>
@@ -213,18 +254,23 @@
         </div>
     </div>
 
-    <div class="container">
+    <!-- Remove style if you want it all-black -->
+    <div class="container" style="background-color: #FFFDFA; padding: 20px; border-radius: 20px; border-width: 10px; border-color: black;">
         <div class="row">
             <div class="col-md-6">
                 <h1 class="mt-4 mb-3 text-center">Add Expense</h1>
                 <form method="POST">
                     <div class="form-group">
                         <label for="description">Description:</label>
-                        <input type="text" name="description" class="form-control" required>
+                        <input type="text" name="description" class="form-control"  required maxlength="25">
+                        <small class="form-text text-muted">Maximum 25 characters, required</small>
+
                     </div>
                     <div class="form-group">
                         <label for="amount">Amount:</label>
-                        <input type="number" name="amount" step="0.01" class="form-control" required>
+                        <input type="number" name="amount" step="0.01" class="form-control" required min="0" max="10000">
+                        <small class="form-text text-muted">Amount of 0 to 10,000, required</small>
+
                     </div>
                     <div class="form-group">
                         <label for="date">Date:</label>
@@ -232,21 +278,32 @@
                     </div>
                     <div class="form-group">
                         <label for="category">Category:</label>
-                        <input type="text" name="category" class="form-control" required>
+                        <input type="text" name="category" class="form-control" required maxlength="10">
+                        <small class="form-text text-muted">Maximum 10 characters, required</small>
+
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
-                    <div class="custom-file mt-3">
-                        <input type="file" id="csvFileInput" accept=".csv" class="custom-file-input">
-                        <label class="custom-file-label" for="csvFileInput">Choose CSV file</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="custom-file">
+                                <input type="file" id="csvFileInput" accept=".csv" class="custom-file-input">
+                                <label class="custom-file-label" for="csvFileInput">Choose CSV file</label>
+                            </div>
+                        </div>
                     </div>
-                    
                 </form>
                 
 
             </div>
-            
+
+            <!-- The vertical line itself :> 
+            <div class="vertical-line"></div>-->
+
             <div class="col-md-6">
-                <h1 class="mt-4 mb-3 text-center">Expense History</h1>
+                <h1 class="mt-4 mb-3 text-center" style="padding-bottom:30px;">Expense History</h1>
+                <div style="max-height: 650px; overflow: auto;">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -259,14 +316,28 @@
                     <tbody>
                         {% for expense in expenses %}
                         <tr>
-                            <td>{{ expense[3] }}</td>
+                            <td class="expense-date">{{ expense[3] }}</td>
                             <td>{{ expense[1] }}</td>
                             <td>{{ expense[4] }}</td>
                             <td>{{ expense[2] }}</td>
+                            <td style="border: none; padding-right: 0px; text-align: right;">
+                                <form action="{{ url_for('delete_expense') }}" method="post">
+                                    <input type="hidden" name="expense_id" value="{{ expense[0] }}">
+                                    <button type="submit" class="btn btn-primary delete-button-small">Delete</button>
+                                </form>
+                            </td>                            
                         </tr>
                         {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>Total:</td>
+                            <td id="total"></td>
+                            <td></td>
+                          </tr>
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
     </div>
@@ -282,11 +353,39 @@
     <script src="{{ url_for('serve_static', filename='dist/userName.js') }}"></script>
     <script src="{{ url_for('serve_static', filename='dist/loginOverlay.js') }}"></script>
     <script src="{{ url_for('serve_static', filename='dist/logoutOverlay.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/dateChange.js') }}"></script>
+
+    <script>
+        function updateTotal() {
+            // Get all the expense rows
+            const expenseRows = document.querySelectorAll('table tbody tr');
+    
+            // Initialize the total
+            let total = 0;
+    
+            // Loop through each row (skip the last one with "Total")
+            for (let i = 0; i < expenseRows.length - 1; i++) {
+                // Get the expense amount (assuming it's in the third column, adjust if necessary)
+                const expenseAmount = parseFloat(expenseRows[i].querySelector('td:nth-child(4)').textContent);
+    
+                // Add the amount to the total
+                total += isNaN(expenseAmount) ? 0 : expenseAmount;
+            }
+    
+            // Display the total in the "total" element (assuming it's in the last row, adjust if necessary)
+            document.getElementById('total').textContent = total.toFixed(2); // Format as a decimal (adjust the number of decimal places as needed)
+        }
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call the updateTotal function when the page loads
+            updateTotal();
+        });
+    </script>
+    
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
-
         import { getAuth } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
         import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
         const firebaseConfig = {
