@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 import sqlite3      
 import csv
 from io import StringIO
+from waitress import serve
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -102,4 +103,4 @@ def upload_csv():
     return render_template('upload.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    serve(app)
