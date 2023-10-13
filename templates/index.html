@@ -395,18 +395,20 @@
     <script src="{{ url_for('serve_static', filename='dist/logoutOverlay.js') }}"></script>
     <script src="{{ url_for('serve_static', filename='dist/dateChange.js') }}"></script>
     <script src="{{ url_for('serve_static', filename='dist/dark-light-mode.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/signupOverlay.js') }}"></script>
     -->
     
     <!-- Github/Apache Relative Path -->
-    <script src="static/dist/firebase-config.bundle.js"></script>
-    <script src="static/dist/firebase-import.bundle.js"></script>
-    <script src="static/dist/firebase-auth.bundle.js"></script>
-    <script src="static/dist/log-sign-auth.js"></script>
-    <script src="static/dist/userName.js"></script>
-    <script src="static/dist/loginOverlay.js"></script>
-    <script src="static/dist/logoutOverlay.js"></script>
-    <script src="static/dist/dateChange.js"></script>
-    <script src="static/dist/dark-light-mode.js"></script>
+    <script src="../static/dist/firebase-config.bundle.js"></script>
+    <script src="../static/dist/firebase-import.bundle.js"></script>
+    <script src="../static/dist/firebase-auth.bundle.js"></script>
+    <script src="../static/dist/log-sign-auth.js"></script>
+    <script src="../static/dist/userName.js"></script>
+    <script src="../static/dist/loginOverlay.js"></script>
+    <script src="../static/dist/logoutOverlay.js"></script>
+    <script src="../static/dist/dateChange.js"></script>
+    <script src="../static/dist/dark-light-mode.js"></script>
+    <script src="../static/dist/signupOverlay.js"></script>
 
     <script>
         function updateTotal() {
@@ -473,6 +475,5 @@
             });
         });
     </script>
-    <script src="{{ url_for('serve_static', filename='dist/signupOverlay.js') }}"></script>
 </body>
 </html>
