@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+  />  
     <title>Expenses Tracker</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             /*background-color: #0b0c10;*/
-            background-color: #232b2b;
+            background-color: white;
             margin: 0;
             padding: 0;
         }
@@ -99,8 +103,8 @@
         }
 
         .form-group, .mb-3, th, td{
-            /*color: #c5c6c7;*/
-            color: black;
+            color: #c5c6c7;
+            /*color: black;*/
         }
         
         #loginOverlay, #signupOverlay {
@@ -142,6 +146,7 @@
             font-weight: bold;
             text-align: center;
             margin-top: 10px;
+            text-decoration: underline;
         }
 
         .mb-3{
@@ -164,10 +169,10 @@
             margin-top: 70px;
 
             /* Add a circle to the upper-left corner */
-            background-image: radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.2) 50%, transparent 50%), 
-                             radial-gradient(circle at 100% 0%, rgba(0, 0, 0, 0.2) 50%, transparent 50%),
-                             radial-gradient(circle at 0% 100%, rgba(0, 0, 0, 0.2) 50%, transparent 50%),
-                             radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.2) 50%, transparent 50%);
+            background-image: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.2) 50%, transparent 50%), 
+                             radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.2) 50%, transparent 50%),
+                             radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.2) 50%, transparent 50%),
+                             radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.2) 50%, transparent 50%);
             background-size: 100px 100px; /* Adjust the size of the circles */
             background-position: 0 0, 100% 0, 0 100%, 100% 100%; /* Position the circles in corners */
             background-repeat: no-repeat; /* Ensure they don't repeat */
@@ -178,9 +183,35 @@
             padding: 1px 5px; /* Adjust the padding to make the button smaller */
             font-size: 10px; /* Adjust the font size to make the text smaller */
         }
+
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 1001;
+          }
+
+          #light-icon, #dark-icon {
+            font-size: 24px; /* Adjust the size as needed */
+          }
+          
+          #light-icon {
+            display: none;
+            color: white;
+          }
+          
+          #dark-icon {
+            color: black;
+          }
+          
+        .overlayscheme {
+            color: black;
+        }
+        
     </style>
 </head>
-<body>
+<body id="color-scheme-light">
     <nav class="sidebar col-md-2 d-none d-md-block">
         <div class="position-sticky">
             <ul class="nav flex-column">
@@ -221,11 +252,11 @@
             <h2>Login</h2>
             <form>
                 <div class="form-group">
-                    <label for="email">Email:</label>
+                    <label class="overlayscheme" for="email">Email:</label>
                     <input type="email" id="email" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label class="overlayscheme" for="password">Password:</label>
                     <input type="password" id="password" class="form-control" required>
                 </div>
                 <button type="button" id="login-button" class="btn btn-primary btn-block">Log In</button>
@@ -241,11 +272,11 @@
             <h2>Sign Up</h2>
             <form>
                 <div class="form-group">
-                    <label for="signupEmail">Email:</label>
+                    <label class="overlayscheme" for="signupEmail">Email:</label>
                     <input type="email" id="signupEmail" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="signupPassword">Password:</label>
+                    <label class="overlayscheme" for="signupPassword">Password:</label>
                     <input type="password" id="signupPassword" class="form-control" required>
                 </div>
                 <button type="button" id="signup-button" class="btn btn-success btn-block">Sign Up</button>
@@ -254,8 +285,15 @@
         </div>
     </div>
 
+    <!-- Dark and Light Mode Icon -->
+    <div class="mode-toggle" id="mode-toggle">
+        <i class="fas fa-sun" id="light-icon" style="display: none;"></i>
+        <i class="fas fa-moon" id="dark-icon" style="display: block;"></i>
+      </div>
+      
+      
     <!-- Remove style if you want it all-black -->
-    <div class="container" style="background-color: #FFFDFA; padding: 20px; border-radius: 20px; border-width: 10px; border-color: black;">
+    <div class="container" id="container" style="background-color: black; padding: 20px; border-radius: 20px; border-width: 10px; border-color: black;">
         <div class="row">
             <div class="col-md-6">
                 <h1 class="mt-4 mb-3 text-center">Add Expense</h1>
@@ -311,6 +349,7 @@
                             <th>Description</th>
                             <th>Category</th>
                             <th>Amount</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -320,7 +359,7 @@
                             <td>{{ expense[1] }}</td>
                             <td>{{ expense[4] }}</td>
                             <td>{{ expense[2] }}</td>
-                            <td style="border: none; padding-right: 0px; text-align: right;">
+                            <td style="padding-right: 15px; text-align: right;">
                                 <form action="{{ url_for('delete_expense') }}" method="post">
                                     <input type="hidden" name="expense_id" value="{{ expense[0] }}">
                                     <button type="submit" class="btn btn-primary delete-button-small">Delete</button>
@@ -354,7 +393,7 @@
     <script src="{{ url_for('serve_static', filename='dist/loginOverlay.js') }}"></script>
     <script src="{{ url_for('serve_static', filename='dist/logoutOverlay.js') }}"></script>
     <script src="{{ url_for('serve_static', filename='dist/dateChange.js') }}"></script>
-
+    <script src="{{ url_for('serve_static', filename='dist/dark-light-mode.js') }}"></script>
     <script>
         function updateTotal() {
             // Get all the expense rows
