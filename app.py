@@ -3,7 +3,7 @@ import sqlite3
 import csv
 from io import StringIO
 
-app = Flask(__name__, template_folder='docs')
+app = Flask(__name__, static_url_path='/static')
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
