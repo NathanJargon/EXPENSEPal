@@ -20,7 +20,7 @@ modeToggle.addEventListener('click', () => {
 
     // Toggle the background color of the body
     if (body.classList.contains('dark-mode')) {
-        body.style.backgroundColor = 'black';
+        body.style.backgroundColor = 'white';
 
         // Change text color to white for specific elements
         const whiteTextElements = document.querySelectorAll('.form-group, .mb-3, th, td, .container');
@@ -30,7 +30,7 @@ modeToggle.addEventListener('click', () => {
         container.style.backgroundColor = '#FAF9F6';
         updateContainerBackground('rgba(0, 0, 0, 0.2)');
     } else {
-        body.style.backgroundColor = 'white';
+        body.style.backgroundColor = 'black';
 
         // Change text color back to the original color for specific elements
         const originalTextElements = document.querySelectorAll('.form-group, .mb-3, th, td, .container');

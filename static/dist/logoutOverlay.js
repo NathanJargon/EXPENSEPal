@@ -1,8 +1,8 @@
 const logoutButton = document.getElementById('loginLogout');
 const logout_textContent = document.getElementById('loginLogoutLink');
 const userNameElement = document.getElementById('userName');
-
 logoutButton.addEventListener('click', () => {
+    if(logout_textContent.textContent === 'Logout') {
     firebase.auth().signOut().then(() => {
         // Sign-out successful.
         console.log('User logged out');
@@ -13,4 +13,4 @@ logoutButton.addEventListener('click', () => {
         // An error occurred during sign-out.
         console.error('Sign-out error:', error);
     });
-});
+}});
