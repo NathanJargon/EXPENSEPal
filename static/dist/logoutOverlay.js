@@ -1,7 +1,7 @@
 const logoutButton = document.getElementById('loginLogout');
 const logout_textContent = document.getElementById('loginLogoutLink');
 const userNameElement = document.getElementById('userName');
-
+let timer;
 // Function to clear the userName from localStorage
 function clearUserNameFromLocalStorage() {
     localStorage.removeItem('userName');
