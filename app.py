@@ -1,10 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
-import csv
-from io import StringIO
-=======
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, jsonify
 import sqlite3
 import csv
@@ -12,12 +5,9 @@ from io import StringIO
 from waitress import serve
 import firebase_admin
 from firebase_admin import credentials, auth, db, firestore
->>>>>>> Stashed changes
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
-<<<<<<< Updated upstream
-=======
 
 # Initialize the Firebase Admin SDK with your project credentials
 cred = credentials.Certificate('firebase-admin.json')
@@ -43,7 +33,6 @@ def add_expense():
 
     # Get the Firebase user ID for the currently logged-in user
     firebase_id_token = request.headers.get('Authorization').split('Bearer ')[-1]
-
     user_id = get_firebase_user_id(firebase_id_token)
     
     if 'uid' in data:
@@ -82,17 +71,17 @@ def view_expenses():
 def serve_static(filename):
     return send_from_directory('static', filename)
     
->>>>>>> Stashed changes
 def create_database():
     conn = sqlite3.connect('expenses.db')
-    cursor = conn.cursor()
+    cursor = conn.cursor()  
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             description TEXT NOT NULL,
             amount REAL NOT NULL,
             date DATE NOT NULL,
-            category TEXT
+            category TEXT,
+            user_id TEXT NOT NULL
         )
     ''')
     conn.commit()
@@ -107,6 +96,21 @@ def fetch_expenses():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+@app.route('/delete_expense', methods=['POST'])
+def delete_expense():
+    if request.method == 'POST':
+        expense_id = request.form['expense_id']
+
+        conn = sqlite3.connect('expenses.db')
+        cursor = conn.cursor()
+
+        # Delete the expense with the given ID
+        cursor.execute('DELETE FROM expenses WHERE id = ?', (expense_id,))
+        conn.commit()
+        conn.close()
+
+    return redirect(url_for('index'))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -161,63 +165,4 @@ def upload_csv():
     return render_template('upload.html')
 
 if __name__ == '__main__':
-<<<<<<< Updated upstream
     app.run(debug=True)
-=======
-from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
-
-app = Flask(__name__)
-
-def create_database():
-    conn = sqlite3.connect('expenses.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            description TEXT NOT NULL,
-            amount REAL NOT NULL,
-            date DATE NOT NULL,
-            category TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-create_database()
-
-def fetch_expenses():
-    conn = sqlite3.connect('expenses.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM expenses')
-    rows = cursor.fetchall()
-    conn.close()
-    return rows
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        description = request.form['description']
-        amount = float(request.form['amount'])
-        date = request.form['date']
-        category = request.form['category']
-
-        conn = sqlite3.connect('expenses.db')
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO expenses (description, amount, date, category)
-            VALUES (?, ?, ?, ?)
-        ''', (description, amount, date, category))
-        conn.commit()
-        conn.close()
-
-        return redirect(url_for('index'))
-
-    return render_template('index.html', expenses=fetch_expenses())
-
-if __name__ == '__main__':
-    app.run(debug=True)
->>>>>>> 4fa81673175f33b42d6969f4e82bb48b134094f7
-=======
-    app.run(debug=True)
->>>>>>> Stashed changes
