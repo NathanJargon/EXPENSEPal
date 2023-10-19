@@ -6,6 +6,8 @@ const login_Email = document.getElementById('email');
 const login_Password = document.getElementById('password');
 const login_TextContent = document.getElementById('loginLogoutLink');
 const userNameElement = document.getElementById('userName');
+var user = firebase.auth().currentUser;
+var id_Token;
 
 // Function to clear the userName from localStorage
 function clearUserNameFromLocalStorage() {
@@ -49,40 +51,53 @@ loginButton.addEventListener('click', () => {
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-    const uid = user ? user.uid : null;
-    // Example expense data
-    const expenseData = {
-      description: 'Expense description',
-      amount: 50.0,
-      date: '2023-10-13',
-      category: 'Category',
-    };
+      user.getIdToken()
+        .then(function (idToken) {
+          // Log the ID token to the console
+          id_Token = idToken;
+          document.cookie = 'your_firebase_cookie_name=' + id_Token;
 
-    // Include the UID in the request headers
-    fetch('/add_expense', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${uid}`, // Include the UID in the "Authorization" header
-      },
-      body: JSON.stringify(expenseData), // Send the expense data as JSON
-    })
-      .then(response => {
-        if (response.status === 200) {
-          // Request was successful
-          return response.json();
-        } else {
-          throw new Error('Request failed with status: ' + response.status);
-        }
-      })
-      .then(data => {
-        // Handle the response from your Flask server
-        console.log('Response from server:', data);
-      })
-      .catch(error => {
-        // Handle any errors
-        console.error('Error:', error);
-      });
+          // Example expense data
+          const expenseData = {
+            description: 'Expense description',
+            amount: 50.0,
+            date: '2023-10-13',
+            category: 'Category',
+            uid: user.uid,
+            idToken: id_Token, // Now idToken is defined
+          };
+
+          // Include the UID in the request headers
+          fetch('/add_expense', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + id_Token, // Use idToken from this scope
+            },
+            body: JSON.stringify(expenseData), // Send the expense data as JSON
+          })
+            .then(response => {
+              if (response.status === 200) {
+                // Request was successful
+                return response.json();
+              } else {
+                throw new Error('Request failed with status: ' + response.status);
+              }
+            })
+            .then(data => {
+              // Handle the response from your Flask server
+              console.log('Response from server:', data);
+            })
+            .catch(error => {
+              // Handle any errors
+              console.error('Error:', error);
+            });
+        })
+        .catch(function (error) {
+          // Handle errors, such as the user not being authenticated
+          console.error('Error getting ID token:', error);
+        });
+
 
       if (user.email) {
           const userEmail = user.email;
