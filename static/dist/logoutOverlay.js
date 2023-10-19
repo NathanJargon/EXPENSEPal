@@ -32,6 +32,7 @@ logoutButton.addEventListener('click', () => {
     firebase.auth().signOut().then(() => {
         // Sign-out successful.
         console.log('User logged out');
+        localStorage.removeItem('userName');
         loginLogoutLink.textContent = 'Login';
         userNameElement.textContent = 'User';
         // Optionally, you can redirect the user to a login page or perform other actions.
