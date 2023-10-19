@@ -8,6 +8,7 @@ const login_TextContent = document.getElementById('loginLogoutLink');
 const userNameElement = document.getElementById('userName');
 var user = firebase.auth().currentUser;
 var id_Token;
+var timeoutID;
 
 // Function to clear the userName from localStorage
 function clearUserNameFromLocalStorage() {
