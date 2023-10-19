@@ -1,97 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, jsonify
-import logging
 import sqlite3
 import csv
 from io import StringIO
 from waitress import serve
 import firebase_admin
-from firebase_admin import credentials, auth, firestore
+from firebase_admin import credentials, auth, db, firestore
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__)
 
-#logging.basicConfig(level=logging.DEBUG)
-
-# Initialize the Firebase Admin SDK with your project credentials
-cred = credentials.Certificate('firebase-admin.json')
-firebase_admin.initialize_app(cred)
-
-db = firestore.client()
-
-# Function to get the Firebase user ID based on the Firebase ID token
-def get_firebase_user_id(firebase_id_token):
-    try:
-        decoded_token = auth.verify_id_token(firebase_id_token)
-        return decoded_token['uid']
-    except auth.AuthError:
-        return None
-
-@app.route('/add_expense', methods=['POST'])
-def add_expense():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
-            description = data.get('description')
-            amount = float(data.get('amount'))
-            date = data.get('date')
-            category = data.get('category')
-
-            # Get the Firebase UID of the user (you already have this)
-            firebase_user_id = request.headers.get('Authorization').split('Bearer ')[1]
-
-            # Access the Firestore user's document
-            user_doc = db.collection('users').document(firebase_user_id)
-
-            # Add the expense data to the "expenses" subcollection
-            user_doc.collection('expenses').add({
-                'description': description,
-                'amount': amount,
-                'date': date,
-                'category': category
-            })
-
-            # Return a JSON response to indicate success
-            return jsonify({'message': 'Expense added successfully'})
-
-        except Exception as e:
-            # Handle any errors and return an error response
-            return jsonify({'error': str(e)}), 400
-
-    # Handle invalid request methods
-    return jsonify({'error': 'Invalid request method'}), 405
-
-
-
-@app.route('/view_expenses')
-def view_expenses():
-    # Get the Firebase user ID for the currently logged-in user
-    firebase_id_token = request.cookies.get('your_firebase_cookie_name')
-    user_id = get_firebase_user_id(firebase_id_token)
-
-    if user_id:
-        # Fetch and display expenses for the user from Firestore
-        user_expenses = db.collection('users').document(user_id).collection('expenses').stream()
-        expenses = [expense.to_dict() for expense in user_expenses]
-        return render_template('expenses.html', expenses=expenses)
-    else:
-        # Handle unauthorized access
-        return "Unauthorized access"
-
-
-@app.route('/static/<path:filename>')
-def serve_static(filename):
-    return send_from_directory('static', filename)
-    
 def create_database():
     conn = sqlite3.connect('expenses.db')
-    cursor = conn.cursor()  
+    cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             description TEXT NOT NULL,
             amount REAL NOT NULL,
             date DATE NOT NULL,
-            category TEXT,
-            user_id TEXT NOT NULL
+            category TEXT
         )
     ''')
     conn.commit()
@@ -106,21 +32,6 @@ def fetch_expenses():
     rows = cursor.fetchall()
     conn.close()
     return rows
-
-@app.route('/delete_expense', methods=['POST'])
-def delete_expense():
-    if request.method == 'POST':
-        expense_id = request.form['expense_id']
-
-        conn = sqlite3.connect('expenses.db')
-        cursor = conn.cursor()
-
-        # Delete the expense with the given ID
-        cursor.execute('DELETE FROM expenses WHERE id = ?', (expense_id,))
-        conn.commit()
-        conn.close()
-
-    return redirect(url_for('index'))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -175,4 +86,4 @@ def upload_csv():
     return render_template('upload.html')
 
 if __name__ == '__main__':
-    app.run() #debug=True
+    app.run(debug=True)
