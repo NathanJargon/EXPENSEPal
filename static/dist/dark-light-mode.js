@@ -27,10 +27,12 @@ modeToggle.addEventListener('click', () => {
         whiteTextElements.forEach((element) => {
             element.style.color = 'black';
         });
-        container.style.backgroundColor = '#FAF9F6';
+        container.style.backgroundColor = 'white';
+        container.style.borderColor = 'black';
         updateContainerBackground('rgba(0, 0, 0, 0.2)');
     } else {
         body.style.backgroundColor = 'black';
+        container.style.borderColor = '';
 
         // Change text color back to the original color for specific elements
         const originalTextElements = document.querySelectorAll('.form-group, .mb-3, th, td, .container');

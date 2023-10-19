@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, jsonify
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response
 import logging
 import sqlite3
 import csv
@@ -28,36 +28,26 @@ def get_firebase_user_id(firebase_id_token):
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
     if request.method == 'POST':
-        try:
-            data = request.get_json()
-            description = data.get('description')
-            amount = float(data.get('amount'))
-            date = data.get('date')
-            category = data.get('category')
+        description = request.json.get('description')
+        amount = float(request.json.get('amount'))
+        date = request.json.get('date')
+        category = request.json.get('category')
 
-            # Get the Firebase UID of the user (you already have this)
-            firebase_user_id = request.headers.get('Authorization').split('Bearer ')[1]
+        # Get the Firebase UID of the user (you already have this)
+        firebase_user_id = request.headers.get('Authorization').split('Bearer ')[1]
 
-            # Access the Firestore user's document
-            user_doc = db.collection('users').document(firebase_user_id)
+        # Access the Firestore user's document
+        user_doc = db.collection('users').document(firebase_user_id)
 
-            # Add the expense data to the "expenses" subcollection
-            user_doc.collection('expenses').add({
-                'description': description,
-                'amount': amount,
-                'date': date,
-                'category': category
-            })
+        # Add the expense data to the "expenses" subcollection
+        user_doc.collection('expenses').add({
+            'description': description,
+            'amount': amount,
+            'date': date,
+            'category': category
+        })
 
-            # Return a JSON response to indicate success
-            return jsonify({'message': 'Expense added successfully'})
-
-        except Exception as e:
-            # Handle any errors and return an error response
-            return jsonify({'error': str(e)}), 400
-
-    # Handle invalid request methods
-    return jsonify({'error': 'Invalid request method'}), 405
+    return redirect(url_for('index'))
 
 
 
