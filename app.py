@@ -188,6 +188,21 @@ def delete_expense(expense_uid):
         return jsonify({'message': f'Error deleting expense: {str(e)}'}, 500)
 
 
+@app.route('/delete_expense', methods=['POST'])
+def delete_expense():
+    if request.method == 'POST':
+        expense_id = request.form['expense_id']
+
+        conn = sqlite3.connect('expenses.db')
+        cursor = conn.cursor()
+
+        # Delete the expense with the given ID
+        cursor.execute('DELETE FROM expenses WHERE id = ?', (expense_id,))
+        conn.commit()
+        conn.close()
+
+    return redirect(url_for('index'))
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':

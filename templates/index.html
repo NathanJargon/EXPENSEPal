@@ -322,7 +322,11 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
+<<<<<<< HEAD
                             <button type="submit" id="submit" class="btn btn-primary btn-block">Add Expense</button>
+=======
+                            <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
                         </div>
                         <div class="col-md-6">
                             <div class="custom-file">
@@ -352,14 +356,41 @@
                             <th>Delete</th>
                         </tr>
                     </thead>
+<<<<<<< HEAD
                     <tbody id="expense-table-body">
                         <!-- Expense rows will be dynamically added here -->
                     </tbody>                      
+=======
+                    <tbody>
+                        {% for expense in expenses %}
+                        <tr>
+                            <td class="expense-date">{{ expense[3] }}</td>
+                            <td>{{ expense[1] }}</td>
+                            <td>{{ expense[4] }}</td>
+                            <td>{{ expense[2] }}</td>
+                            <td style="padding-right: 15px; text-align: right;">
+                                <form action="{{ url_for('delete_expense') }}" method="post">
+                                    <input type="hidden" name="expense_id" value="{{ expense[0] }}">
+                                    <button type="submit" class="btn btn-primary delete-button-small">Delete</button>
+                                </form>
+                            </td>                            
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>Total:</td>
+                            <td id="total"></td>
+                            <td></td>
+                          </tr>
+                    </tbody>
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
                 </table>
                 <div class="col-md-6">
                     <div class="mt-4 mb-3 text-right" style="text-decoration: none; margin-left: 185%;">Total: <span id="total" class="total-span">0.00</span></p></div>
                 </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -381,6 +412,49 @@
     <script src="{{ url_for('serve_static', filename='dist/signupOverlay.js') }}"></script>
     -->
     
+<<<<<<< HEAD
+=======
+    <!-- Github/Apache Relative Path -->
+    <script src="../static/dist/firebase-config.bundle.js"></script>
+    <script src="../static/dist/firebase-import.bundle.js"></script>
+    <script src="../static/dist/firebase-auth.bundle.js"></script>
+    <script src="../static/dist/log-sign-auth.js"></script>
+    <script src="../static/dist/userName.js"></script>
+    <script src="../static/dist/loginOverlay.js"></script>
+    <script src="../static/dist/logoutOverlay.js"></script>
+    <script src="../static/dist/dateChange.js"></script>
+    <script src="../static/dist/dark-light-mode.js"></script>
+    <script src="../static/dist/signupOverlay.js"></script>
+
+    <script>
+        function updateTotal() {
+            // Get all the expense rows
+            const expenseRows = document.querySelectorAll('table tbody tr');
+    
+            // Initialize the total
+            let total = 0;
+    
+            // Loop through each row (skip the last one with "Total")
+            for (let i = 0; i < expenseRows.length - 1; i++) {
+                // Get the expense amount (assuming it's in the third column, adjust if necessary)
+                const expenseAmount = parseFloat(expenseRows[i].querySelector('td:nth-child(4)').textContent);
+    
+                // Add the amount to the total
+                total += isNaN(expenseAmount) ? 0 : expenseAmount;
+            }
+    
+            // Display the total in the "total" element (assuming it's in the last row, adjust if necessary)
+            document.getElementById('total').textContent = total.toFixed(2); // Format as a decimal (adjust the number of decimal places as needed)
+        }
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call the updateTotal function when the page loads
+            updateTotal();
+        });
+    </script>
+    
+
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
@@ -402,6 +476,7 @@
         firebase.initializeApp(firebaseConfig); //Very Important Code
     </script>
 
+<<<<<<< HEAD
     <!-- Github/Apache Relative Path -->
     <script src="../static/dist/firebase-config.bundle.js"></script>
     <script src="../static/dist/firebase-import.bundle.js"></script>
@@ -445,6 +520,8 @@
         }
     </script>
 
+=======
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
     <script>
         $(document).ready(function() {
             const sidebar = $('.sidebar');
