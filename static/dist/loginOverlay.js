@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 amount,
                 date,
                 category,
-                uid: user.uid,
                 idToken: id_Token,
               };
 

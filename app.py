@@ -4,6 +4,7 @@ from io import StringIO
 from waitress import serve
 import firebase_admin
 from firebase_admin import credentials, auth, db, firestore
+from uuid import uuid4
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -79,12 +80,20 @@ def add_expense():
 
                 # Add the expense data to Firestore
                 expenses_ref = db.collection('expenses')
-                expenses_ref.add(data)
+                result = expenses_ref.add(data)
+
+                # Get the auto-generated ID
+                auto_generated_id = result[1].id
+
+                # Now you can use 'auto_generated_id' as needed
+                print('Auto-generated ID:', auto_generated_id)
 
                 response_data = {
                     'message': 'Expense added successfully',
-                    'data': data
+                    'data': data,
+                    'auto_generated_id': auto_generated_id  # Include the ID in the response
                 }
+
 
                 return jsonify(response_data)
             else:
@@ -145,46 +154,30 @@ def fetch_expenses():
     conn.close()
     return rows"""
 
+
 @app.route('/delete_expense/<expense_uid>', methods=['DELETE'])
 def delete_expense(expense_uid):
     print("Received expense_uid:", expense_uid)
-    
-    # Extract Firebase ID token from the Authorization header
-    firebase_id_token = request.headers.get('Authorization')
-    
-    if firebase_id_token:
-        firebase_id_token = firebase_id_token.split('Bearer ')[-1]
+    try:
+        # Initialize the Firestore client
+        db = firestore.client()
 
-        # Verify the ID token
-        user_id = verify_id_token(firebase_id_token)
+        # Replace 'expenses' with the name of your Firestore collection
+        expenses_ref = db.collection('expenses')
+        print("Attempting to delete document:", expense_uid)
 
-        if user_id:
-            if isinstance(user_id, dict) and 'user_id' in user_id:
-                # Check if the user has permission to delete the expense
-                user_uid = user_id['user_id']
-                
-                # Initialize the Firestore client
-                db = firestore.client()
-
-                # Replace 'expenses' with the name of your Firestore collection
-                expenses_ref = db.collection('expenses')
-
-                # Check if the expense exists and belongs to the user before deletion
-                expense_doc = expenses_ref.document(expense_uid).get()
-                expense_data = expense_doc.to_dict() if expense_doc.exists else None
-
-                if expense_data and expense_data['user_id'] == user_uid:
-                    # Delete the expense with the given expense_uid
-                    expenses_ref.document(expense_uid).delete()
-                    return jsonify({'message': 'Expense deleted successfully'})
-                else:
-                    return jsonify({'message': 'Expense not found or unauthorized access'}, 404)
-            else:
-                return jsonify({'message': 'Invalid user ID in the token'})
+        # Delete the expense with the given expense_uid
+        result = expenses_ref.document(expense_uid).delete()
+        if result is not None:
+            print("Expense deleted successfully:", result)
+            return jsonify({'message': 'Expense deleted successfully'})
         else:
-            return jsonify({'message': 'Unauthorized access'})
-    else:
-        return jsonify({'message': 'Missing Authorization header'})
+            print("Expense not found or unauthorized access")
+            return jsonify({'message': 'Expense not found or unauthorized access'}, 404)
+    except Exception as e:
+        print(f'Error deleting expense: {str(e)}')
+        return jsonify({'message': f'Error deleting expense: {str(e)}'}, 500)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

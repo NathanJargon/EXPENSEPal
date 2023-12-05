@@ -1,4 +1,3 @@
-// Function to fetch and update expenses
 function fetchAndUpdateExpenses() {
     // Append a timestamp to the GET request URL to prevent caching
     fetch(`/get_expenses?timestamp=${Date.now()}`)
@@ -34,7 +33,7 @@ function fetchAndUpdateExpenses() {
         });
 }
 
-// Function to delete an expense by ID
+
 function deleteExpense(expenseUid) {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -42,6 +41,7 @@ function deleteExpense(expenseUid) {
                 .then(function (idToken) {
                     const id_Token = idToken;
                     document.cookie = 'your_firebase_cookie_name=' + id_Token;
+                    console.log(user.uid);
 
                     fetch(`/delete_expense/${expenseUid}`, {
                         method: 'DELETE',
@@ -58,13 +58,15 @@ function deleteExpense(expenseUid) {
                     })
                     .then(data => {
                         console.log('Expense deleted successfully:', data);
-                        // Introduce a delay before fetching updated expenses
-                        setTimeout(() => {
-                            fetchAndUpdateExpenses();
-                        }, 1000); // 1 second delay (adjust as needed)
+                        fetchAndUpdateExpenses();  // Update the UI after successful deletion
                     })
                     .catch(error => {
                         console.error('Error deleting expense:', error);
+                        
+                        // Check if the error is due to the expense not found
+                        if (error.message === 'Failed to delete expense. Status: 404') {
+                            alert('Expense not found.');  // Display an alert or update the UI accordingly
+                        }
                     });
                 })
                 .catch(function (error) {
@@ -73,6 +75,7 @@ function deleteExpense(expenseUid) {
         }
     });
 }
+
 
 // Call the function to fetch and update expenses when the page loads
 document.addEventListener('DOMContentLoaded', fetchAndUpdateExpenses);
