@@ -42,7 +42,7 @@ function deleteExpense(expenseUid) {
                 .then(function (idToken) {
                     const id_Token = idToken;
                     document.cookie = 'your_firebase_cookie_name=' + id_Token;
-                    console.log(user.uid);
+                    //console.log(user.uid);
 
                     fetch(`/delete_expense/${expenseUid}`, {
                         method: 'DELETE',
@@ -58,7 +58,7 @@ function deleteExpense(expenseUid) {
                         }
                     })
                     .then(data => {
-                        console.log('Expense deleted successfully:', data);
+                        //console.log('Expense deleted successfully:', data);
                         fetchAndUpdateExpenses();  // Update the UI after successful deletion
                     })
                     .catch(error => {
