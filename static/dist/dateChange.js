@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
     //console.log('dateChange.js loaded');
     // Get all the expense date elements
     const expenseDateElements = document.querySelectorAll('.expense-date');
     // console.log(expenseDateElements);
+=======
+
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+    //console.log('dateChange.js loaded');
+    // Get all the expense date elements
+    const expenseDateElements = document.querySelectorAll('.expense-date');
 
     // Loop through each date element
     expenseDateElements.forEach(function(dateElement) {
@@ -23,6 +31,4 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set the element's text content to the formatted date
         dateElement.textContent = formattedDate;
     });
-        // Your date formatting code here
-    }, 300);
 });
