@@ -145,28 +145,46 @@ def fetch_expenses():
     conn.close()
     return rows"""
 
-@app.route('/delete_expense/<expense_id>', methods=['DELETE'])
-def delete_expense(expense_id):
-    print("Received expense_id:", expense_id)
-    try:
-        # Initialize the Firestore client
-        db = firestore.client()
+@app.route('/delete_expense/<expense_uid>', methods=['DELETE'])
+def delete_expense(expense_uid):
+    print("Received expense_uid:", expense_uid)
+    
+    # Extract Firebase ID token from the Authorization header
+    firebase_id_token = request.headers.get('Authorization')
+    
+    if firebase_id_token:
+        firebase_id_token = firebase_id_token.split('Bearer ')[-1]
 
-        # Replace 'expenses' with the name of your Firestore collection
-        expenses_ref = db.collection('expenses')
-        print("Attempting to delete document:", expense_id)
+        # Verify the ID token
+        user_id = verify_id_token(firebase_id_token)
 
-        # Delete the expense with the given expense_id
-        # Use .document(expense_id) to specify the document by ID
-        expenses_ref.document(expense_id).delete()
+        if user_id:
+            if isinstance(user_id, dict) and 'user_id' in user_id:
+                # Check if the user has permission to delete the expense
+                user_uid = user_id['user_id']
+                
+                # Initialize the Firestore client
+                db = firestore.client()
 
-        print("Expense deleted successfully")
+                # Replace 'expenses' with the name of your Firestore collection
+                expenses_ref = db.collection('expenses')
 
-        return jsonify({'message': 'Expense deleted successfully'})
-    except Exception as e:
-        print(f"Error deleting expense: {str(e)}")
-        return jsonify({'message': f'Error deleting expense: {str(e)}'}, 500)
+                # Check if the expense exists and belongs to the user before deletion
+                expense_doc = expenses_ref.document(expense_uid).get()
+                expense_data = expense_doc.to_dict() if expense_doc.exists else None
 
+                if expense_data and expense_data['user_id'] == user_uid:
+                    # Delete the expense with the given expense_uid
+                    expenses_ref.document(expense_uid).delete()
+                    return jsonify({'message': 'Expense deleted successfully'})
+                else:
+                    return jsonify({'message': 'Expense not found or unauthorized access'}, 404)
+            else:
+                return jsonify({'message': 'Invalid user ID in the token'})
+        else:
+            return jsonify({'message': 'Unauthorized access'})
+    else:
+        return jsonify({'message': 'Missing Authorization header'})
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

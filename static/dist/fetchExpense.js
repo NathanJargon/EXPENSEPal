@@ -1,6 +1,7 @@
 // Function to fetch and update expenses
 function fetchAndUpdateExpenses() {
-    fetch('/get_expenses') // Replace with your Flask route to fetch expenses
+    // Append a timestamp to the GET request URL to prevent caching
+    fetch(`/get_expenses?timestamp=${Date.now()}`)
         .then(response => response.json())
         .then(data => {
             console.log('Fetching and updating expenses:', data);
@@ -33,9 +34,8 @@ function fetchAndUpdateExpenses() {
         });
 }
 
-
 // Function to delete an expense by ID
-function deleteExpense(expenseId) {
+function deleteExpense(expenseUid) {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             user.getIdToken()
@@ -43,7 +43,7 @@ function deleteExpense(expenseId) {
                     const id_Token = idToken;
                     document.cookie = 'your_firebase_cookie_name=' + id_Token;
 
-                    fetch(`/delete_expense/${expenseId}`, {
+                    fetch(`/delete_expense/${expenseUid}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': 'Bearer ' + id_Token,
@@ -58,7 +58,10 @@ function deleteExpense(expenseId) {
                     })
                     .then(data => {
                         console.log('Expense deleted successfully:', data);
-                        fetchAndUpdateExpenses();  // Update the UI after successful deletion
+                        // Introduce a delay before fetching updated expenses
+                        setTimeout(() => {
+                            fetchAndUpdateExpenses();
+                        }, 1000); // 1 second delay (adjust as needed)
                     })
                     .catch(error => {
                         console.error('Error deleting expense:', error);
