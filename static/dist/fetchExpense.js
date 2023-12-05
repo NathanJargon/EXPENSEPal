@@ -4,7 +4,7 @@ function fetchAndUpdateExpenses() {
     fetch(`/get_expenses?timestamp=${Date.now()}`)
         .then(response => response.json())
         .then(data => {
-            console.log('Fetching and updating expenses:', data);
+            //console.log('Fetching and updating expenses:', data);
 
             const tableBody = document.getElementById('expense-table-body');
             tableBody.innerHTML = ''; // Clear the existing rows
@@ -17,11 +17,11 @@ function fetchAndUpdateExpenses() {
                 <td>${expense.category}</td>
                 <td>${parseFloat(expense.amount).toFixed(2)}</td> <!-- Format with 2 decimal places -->
                 <td style="padding-right: 15px; text-align: right;">
-                    <button class="btn btn-primary delete-button-small" data-id="${expense.user_id}">Delete</button>
+                    <button class="btn btn-primary delete-button-small" data-id="${expense.data_id}">Delete</button>
                 </td>
                 `;
 
-                newRow.querySelector('.delete-button-small').addEventListener('click', () => deleteExpense(expense.user_id));
+                newRow.querySelector('.delete-button-small').addEventListener('click', () => deleteExpense(expense.data_id));
 
                 tableBody.appendChild(newRow);
             });

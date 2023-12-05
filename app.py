@@ -57,6 +57,8 @@ def get_expenses():
 
     return jsonify({'expenses': expenses_data})
 
+from flask import jsonify
+
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
     data = request.get_json()
@@ -82,18 +84,22 @@ def add_expense():
                 # Get the auto-generated ID
                 auto_generated_id = result[1].id
 
-                # Now you can use 'auto_generated_id' as needed
-                data['user_id'] = auto_generated_id
+                # Use 'user_id' for the actual user identifier
+                data['user_id'] = user_id['user_id']
+                
+                # Use 'data_id' for the auto-generated ID
+                data['data_id'] = auto_generated_id
 
                 response_data = {
                     'message': 'Expense added successfully',
                     'data': data,
-                    'auto_generated_id': auto_generated_id  # Include the ID in the response
+                    'data_id': auto_generated_id  # Include the ID in the response
                 }
 
-                # Replace the 'user_id' field in Firestore with the auto-generated ID
+                # Replace the 'user_id' and 'data_id' fields in Firestore
                 expenses_ref.document(auto_generated_id).set({
-                    'user_id': auto_generated_id
+                    'user_id': user_id['user_id'],
+                    'data_id': auto_generated_id
                     # Add other fields as needed
                 }, merge=True)
 
