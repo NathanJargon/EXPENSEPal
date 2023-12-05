@@ -297,7 +297,7 @@
         <div class="row">
             <div class="col-md-6">
                 <h1 class="mt-4 mb-3 text-center">Add Expense</h1>
-                <form method="POST">
+                <form id="expense-form" method="POST">
                     <div class="form-group">
                         <label for="description">Description:</label>
                         <input type="text" name="description" class="form-control"  required maxlength="25">
@@ -322,7 +322,11 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
+<<<<<<< HEAD
+                            <button type="submit" id="submit" class="btn btn-primary btn-block">Add Expense</button>
+=======
                             <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
                         </div>
                         <div class="col-md-6">
                             <div class="custom-file">
@@ -352,6 +356,11 @@
                             <th>Delete</th>
                         </tr>
                     </thead>
+<<<<<<< HEAD
+                    <tbody id="expense-table-body">
+                        <!-- Expense rows will be dynamically added here -->
+                    </tbody>                      
+=======
                     <tbody>
                         {% for expense in expenses %}
                         <tr>
@@ -375,7 +384,12 @@
                             <td></td>
                           </tr>
                     </tbody>
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
                 </table>
+                <div class="col-md-6">
+                    <div class="mt-4 mb-3 text-right" style="text-decoration: none; margin-left: 185%;">Total: <span id="total" class="total-span">0.00</span></p></div>
+                </div>
+                </div>
             </div>
             </div>
         </div>
@@ -398,6 +412,8 @@
     <script src="{{ url_for('serve_static', filename='dist/signupOverlay.js') }}"></script>
     -->
     
+<<<<<<< HEAD
+=======
     <!-- Github/Apache Relative Path -->
     <script src="../static/dist/firebase-config.bundle.js"></script>
     <script src="../static/dist/firebase-import.bundle.js"></script>
@@ -438,6 +454,7 @@
     </script>
     
 
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
@@ -459,6 +476,52 @@
         firebase.initializeApp(firebaseConfig); //Very Important Code
     </script>
 
+<<<<<<< HEAD
+    <!-- Github/Apache Relative Path -->
+    <script src="../static/dist/firebase-config.bundle.js"></script>
+    <script src="../static/dist/firebase-import.bundle.js"></script>
+    <script src="../static/dist/firebase-auth.bundle.js"></script>
+    <script src="../static/dist/log-sign-auth.js"></script>
+    <script src="../static/dist/userName.js"></script>
+    <script src="../static/dist/loginOverlay.js"></script>
+    <script src="../static/dist/logoutOverlay.js"></script>
+    <script src="../static/dist/dark-light-mode.js"></script>
+    <script src="../static/dist/signupOverlay.js"></script>
+    <script src="../static/dist/addExpense.js"></script>
+    <script src="../static/dist/fetchExpense.js"></script>
+    <script src="../static/dist/dateChange.js"></script>
+    
+    <script>
+        function updateTotal() {
+            // Get all the expense rows
+            const expenseRows = document.querySelectorAll('table tbody tr');
+            console.log(expenseRows);
+        
+            // Initialize the total
+            let total = 0;
+        
+            // Loop through each row
+            for (let i = 0; i < expenseRows.length; i++) {
+                // Get the expense amount (assuming it's in the fourth column, adjust if necessary)
+                const expenseAmountText = expenseRows[i].querySelector('td:nth-child(4)').textContent;
+                const expenseAmount = parseFloat(expenseAmountText);
+        
+                // Check if the amount is a valid number and an integer
+                if (!isNaN(expenseAmount) && Number.isInteger(expenseAmount)) {
+                    // Add the amount to the total
+                    total += expenseAmount;
+                }
+            }
+        
+            // Display the total with two decimal places
+            const totalElement = document.getElementById('total');
+            const totalSpan = totalElement.querySelector('.total-span');
+            totalSpan.textContent = total.toFixed(2); // Format as a decimal with 2 decimal places
+        }
+    </script>
+
+=======
+>>>>>>> d40e27aa09405a02721ea4c43b7dd1dd95337db8
     <script>
         $(document).ready(function() {
             const sidebar = $('.sidebar');
@@ -474,6 +537,14 @@
                 }
             });
         });
+    </script>
+    <script>
+        
+        function updateTotal(expenses) {
+            // Calculate the total based on the expenses and update the total element
+            const total = expenses.reduce((acc, expense) => acc + parseFloat(expense.amount), 0);
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
     </script>
 </body>
 </html>
