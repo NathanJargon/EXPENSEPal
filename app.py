@@ -4,7 +4,6 @@ from io import StringIO
 from waitress import serve
 import firebase_admin
 from firebase_admin import credentials, auth, db, firestore
-from uuid import uuid4
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -76,8 +75,6 @@ def add_expense():
 
         if user_id:
             if isinstance(user_id, dict) and 'user_id' in user_id:
-                data['user_id'] = user_id['user_id']
-
                 # Add the expense data to Firestore
                 expenses_ref = db.collection('expenses')
                 result = expenses_ref.add(data)
@@ -86,7 +83,7 @@ def add_expense():
                 auto_generated_id = result[1].id
 
                 # Now you can use 'auto_generated_id' as needed
-                print('Auto-generated ID:', auto_generated_id)
+                data['user_id'] = auto_generated_id
 
                 response_data = {
                     'message': 'Expense added successfully',
@@ -94,10 +91,16 @@ def add_expense():
                     'auto_generated_id': auto_generated_id  # Include the ID in the response
                 }
 
+                # Replace the 'user_id' field in Firestore with the auto-generated ID
+                expenses_ref.document(auto_generated_id).set({
+                    'user_id': auto_generated_id
+                    # Add other fields as needed
+                }, merge=True)
 
                 return jsonify(response_data)
             else:
                 return jsonify({'message': 'Invalid user ID in the token'})
+
         else:
             return jsonify({'message': 'Unauthorized access'})
     else:
