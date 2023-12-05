@@ -462,32 +462,6 @@
         });
     </script>
     <script>
-    
-        function deleteExpense() {
-            const expenseId = this.getAttribute('data-id');
-            
-            // Send a request to your server to delete the expense with the given ID
-            fetch(`/delete_expense/${expenseId}`, {
-                method: 'DELETE',
-            })
-            .then(response => {
-                if (response.status === 200) {
-                    // Successfully deleted the expense
-                    // You can update the UI to reflect the deletion
-                    const deletedRow = document.querySelector(`tr[data-id="${expenseId}"]`);
-                    if (deletedRow) {
-                        deletedRow.remove(); // Remove the row from the table
-                        updateTotal(); // Update the total after removal
-                    }
-                } else {
-                    // Handle the error, e.g., show an error message
-                    console.error('Failed to delete expense:', response.status);
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting expense:', error);
-            });
-        }
         
         function updateTotal(expenses) {
             // Calculate the total based on the expenses and update the total element

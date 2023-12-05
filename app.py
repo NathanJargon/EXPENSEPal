@@ -60,30 +60,39 @@ def get_expenses():
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
     data = request.get_json()
-    firebase_id_token = request.headers.get('Authorization').split('Bearer ')[-1]
-    
-    user_id = verify_id_token(firebase_id_token)  # Verify the ID token
-    
-    if user_id:
-        if isinstance(user_id, dict) and 'user_id' in user_id:
-            data['user_id'] = user_id['user_id']
-            
-            # Add the expense data to Firestore
-            expenses_ref = db.collection('expenses')
-            expenses_ref.add(data)
+    firebase_id_token = request.headers.get('Authorization')
 
-            response_data = {
-                'message': 'Expense added successfully',
-                'data': data
-            }
+    print('Received Firebase ID token:', firebase_id_token)
+    print('Received expense data:', data)
 
-            return jsonify(response_data)
+    if firebase_id_token:
+        firebase_id_token = firebase_id_token.split('Bearer ')[-1]
+
+        # Log the received Firebase ID token
+        print('Received Firebase ID token:', firebase_id_token)
+
+        user_id = verify_id_token(firebase_id_token)  # Verify the ID token
+
+        if user_id:
+            if isinstance(user_id, dict) and 'user_id' in user_id:
+                data['user_id'] = user_id['user_id']
+
+                # Add the expense data to Firestore
+                expenses_ref = db.collection('expenses')
+                expenses_ref.add(data)
+
+                response_data = {
+                    'message': 'Expense added successfully',
+                    'data': data
+                }
+
+                return jsonify(response_data)
+            else:
+                return jsonify({'message': 'Invalid user ID in the token'})
         else:
-            return jsonify({'message': 'Invalid user ID in the token'})
+            return jsonify({'message': 'Unauthorized access'})
     else:
-        return jsonify({'message': 'Unauthorized access'})
-
-
+        return jsonify({'message': 'Missing Authorization header'})
 
 
 @app.route('/view_expenses')
@@ -138,20 +147,25 @@ def fetch_expenses():
 
 @app.route('/delete_expense/<expense_id>', methods=['DELETE'])
 def delete_expense(expense_id):
+    print("Received expense_id:", expense_id)
     try:
         # Initialize the Firestore client
         db = firestore.client()
 
         # Replace 'expenses' with the name of your Firestore collection
         expenses_ref = db.collection('expenses')
+        print("Attempting to delete document:", expense_id)
 
         # Delete the expense with the given expense_id
+        # Use .document(expense_id) to specify the document by ID
         expenses_ref.document(expense_id).delete()
+
+        print("Expense deleted successfully")
 
         return jsonify({'message': 'Expense deleted successfully'})
     except Exception as e:
+        print(f"Error deleting expense: {str(e)}")
         return jsonify({'message': f'Error deleting expense: {str(e)}'}, 500)
-
 
 
 @app.route('/', methods=['GET', 'POST'])
