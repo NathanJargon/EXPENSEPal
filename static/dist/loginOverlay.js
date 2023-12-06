@@ -54,15 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(function (error) {
               console.error('Error getting ID token:', error);
             });
-
-          if (user.email) {
-            const userEmail = user.email;
-            let userName = userEmail.split('@')[0].slice(0, 5).toUpperCase();
-            login_TextContent.textContent = 'Logout';
-            userNameElement.textContent = userName;
-            localStorage.setItem('userName', userName);
-          }
-          loginForm.style.display = 'none';
         }
       });
     });
@@ -82,10 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
               document.cookie = 'your_firebase_cookie_name=' + id_Token;
 
               const expenseData = {
-                description: 'Expense description',
-                amount: 50.0,
-                date: '2023-10-13',
-                category: 'Category',
                 uid: user.uid,
                 idToken: id_Token,
               };
@@ -120,14 +107,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             
 
-          /*if (user.email) {
+          if (user.email) {
             const userEmail = user.email;
             let userName = userEmail.split('@')[0].slice(0, 5).toUpperCase();
             login_TextContent.textContent = 'Logout';
             userNameElement.textContent = userName;
             localStorage.setItem('userName', userName);
           }
-          loginForm.style.display = 'none';*/
+          loginForm.style.display = 'none';
         }
       });
 
@@ -138,13 +125,13 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log('Login successful:', userCredential.email);
+          //console.log('Login successful:', userCredential.email);
           loginForm.style.display = 'none';
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.error('Login error:', errorCode, errorMessage);
+          //console.error('Login error:', errorCode, errorMessage);
 
           if (errorCode === 'auth/wrong-password') {
             alert('Wrong password.');

@@ -57,7 +57,6 @@ def get_expenses():
 
     return jsonify({'expenses': expenses_data})
 
-from flask import jsonify
 
 @app.route('/add_expense', methods=['POST'])
 def add_expense():

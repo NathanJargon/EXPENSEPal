@@ -62,7 +62,7 @@ function deleteExpense(expenseUid) {
                         fetchAndUpdateExpenses();  // Update the UI after successful deletion
                     })
                     .catch(error => {
-                        console.error('Error deleting expense:', error);
+                        //console.error('Error deleting expense:', error);
                         
                         // Check if the error is due to the expense not found
                         if (error.message === 'Failed to delete expense. Status: 404') {
