@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Personal Finance Tracker is a simple web application designed to help users track their expenses and manage their finances. It provides an easy-to-use interface for users to record their expenses, categorize them, and view their spending history.
+The Personal Finance Tracker is a comprehensive web application designed to assist users in managing their expenses and gaining insights into their financial habits. The application integrates both front-end and back-end functionalities, utilizes Firebase for authentication, and employs a simple yet effective user interface.
 
 ## Features
 
@@ -23,7 +23,8 @@ The Personal Finance Tracker is a simple web application designed to help users 
 
 - **Frontend**: HTML, CSS, JavaScript, Bootstrap
 - **Backend**: Python, Flask (a micro web framework)
-- **Database**: SQLite (a lightweight database)
+- **Database**: Firebase Firestore, SQLite (a lightweight database)
+- **Authentication**: Firebase Authentication, Firebase
 - **Version Control**: Git and GitHub
 
 ## Getting Started
