@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 date,
                 category,
                 idToken: id_Token,
+                email: user.email,
               };
 
               fetch('/add_expense', {

@@ -1,39 +1,59 @@
-// Function to fetch and update expenses
 function fetchAndUpdateExpenses() {
-    // Append a timestamp to the GET request URL to prevent caching
-    fetch(`/get_expenses?timestamp=${Date.now()}`)
-        .then(response => response.json())
-        .then(data => {
-            //console.log('Fetching and updating expenses:', data);
+    const tableBody = document.getElementById('expense-table-body');
+    tableBody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>'; // Display loading indicator
 
-            const tableBody = document.getElementById('expense-table-body');
-            tableBody.innerHTML = ''; // Clear the existing rows
-
-            data.expenses.forEach(expense => {
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                <td class="expense-date">${expense.date}</td>
-                <td>${expense.description}</td>
-                <td>${expense.category}</td>
-                <td>${parseFloat(expense.amount).toFixed(2)}</td> <!-- Format with 2 decimal places -->
-                <td style="padding-right: 15px; text-align: right;">
-                    <button class="btn btn-primary delete-button-small" data-id="${expense.data_id}">Delete</button>
-                </td>
-                `;
-
-                newRow.querySelector('.delete-button-small').addEventListener('click', () => deleteExpense(expense.data_id));
-
-                tableBody.appendChild(newRow);
-            });
-
-            // Optionally, you can also update the total
-            updateTotal(data.expenses);
-        })
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            user.getIdToken().then(idToken => {
+                fetch(`/get_expenses?email=${user.email}&timestamp=${Date.now()}`,  {
+                    headers: {
+                        'Authorization': 'Bearer ' + idToken,
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched data:", data);
+                    tableBody.innerHTML = ''; // Clear the loading indicator
+                
+                    if (data.user_expenses) { // Check if data.user_expenses is defined
+                        data.user_expenses.forEach(expense => {
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td class="expense-date">${expense.date}</td>
+                                <td>${expense.description}</td>
+                                <td>${expense.category}</td>
+                                <td>${parseFloat(expense.amount).toFixed(2)}</td> <!-- Format with 2 decimal places -->
+                                <td style="padding-right: 15px; text-align: right;">
+                                    <button class="btn btn-primary delete-button-small" data-id="${expense.data_id}">Delete</button>
+                                </td>
+                            `;
+                
+                            newRow.querySelector('.delete-button-small').addEventListener('click', () => deleteExpense(expense.data_id));
+                
+                            tableBody.appendChild(newRow);
+                        });
+                
+                        updateTotal(data.user_expenses);
+                    } else {
+                        console.error('Error: Expenses data is undefined');
+                    }
+                })
+                
         .catch(error => {
             console.error('Error fetching expenses:', error);
+            tableBody.innerHTML = '<tr><td colspan="5">Error fetching expenses.</td></tr>'; // Display error message
         });
+    })
+    .catch(error => {
+        console.error('Error getting ID token:', error);
+        tableBody.innerHTML = '<tr><td colspan="5">Error getting ID token.</td></tr>'; // Display error message
+    });
+    } else {
+        console.error('User not signed in. Cannot fetch expenses.');
+        tableBody.innerHTML = '<tr><td colspan="5">User not signed in.</td></tr>'; // Display error message
+    }
+ });
 }
-
 
 function deleteExpense(expenseUid) {
     firebase.auth().onAuthStateChanged((user) => {

@@ -11,6 +11,14 @@ cred = credentials.Certificate('firebase-admin.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+################REGISTRATION PROCESS##########################
+
+
+    
+###############################################################
+
+################FETCHING AND ADDING PROCESS##########################
+
 def get_firebase_user_id(firebase_id_token):
     try:
         decoded_token = auth.verify_id_token(firebase_id_token)
@@ -36,16 +44,21 @@ def verify_id_token(id_token):
         print("Error verifying token:", str(e))
         return "Error"
     
-
 @app.route('/get_expenses', methods=['GET'])
 def get_expenses():
+    # Get the user's email from the query parameters
+    user_email = request.args.get('email')
+
+    if not user_email:
+        return jsonify({'message': 'Missing email parameter'})
+
     # Initialize the Firestore client
     db = firestore.client()
 
     # Replace 'expenses' with the name of your Firestore collection
-    expenses_ref = db.collection('expenses')
+    expenses_ref = db.collection('expenses').document(user_email).collection('user_expenses')
 
-    # Fetch all expenses from the Firestore collection
+    # Fetch all documents from the user's subcollection
     expenses = expenses_ref.stream()
 
     # Convert expenses to a list of dictionaries
@@ -54,51 +67,45 @@ def get_expenses():
     for expense in expenses:
         expense_data = expense.to_dict()
         expenses_data.append(expense_data)
+        
+    print("Fetched expenses:", expenses_data)
 
-    return jsonify({'expenses': expenses_data})
-
+    return jsonify({'user_expenses': expenses_data})
 
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
     data = request.get_json()
     firebase_id_token = request.headers.get('Authorization')
 
-    print('Received Firebase ID token:', firebase_id_token)
-    print('Received expense data:', data)
-
     if firebase_id_token:
         firebase_id_token = firebase_id_token.split('Bearer ')[-1]
-
-        # Log the received Firebase ID token
-        print('Received Firebase ID token:', firebase_id_token)
-
-        user_id = verify_id_token(firebase_id_token)  # Verify the ID token
+        user_id = verify_id_token(firebase_id_token)
 
         if user_id:
             if isinstance(user_id, dict) and 'user_id' in user_id:
-                # Add the expense data to Firestore
-                expenses_ref = db.collection('expenses')
-                result = expenses_ref.add(data)
+                user_id = user_id['user_id']
+                user_email = data.get('email')  # Assuming the email is passed in the expense data
 
-                # Get the auto-generated ID
+                # Create the user document if it doesn't exist
+                user_ref = db.collection('expenses').document(user_email)
+                user_data = {'user_id': user_id, 'email': user_email}
+                user_ref.set(user_data, merge=True)
+
+                # Add the expense data to Firestore under the user's email
+                expenses_ref = user_ref.collection('user_expenses')
+                result = expenses_ref.add(data)
                 auto_generated_id = result[1].id
 
-                # Use 'user_id' for the actual user identifier
-                data['user_id'] = user_id['user_id']
-                
-                # Use 'data_id' for the auto-generated ID
-                data['data_id'] = auto_generated_id
-
+                # Include the ID in the response
                 response_data = {
                     'message': 'Expense added successfully',
                     'data': data,
-                    'data_id': auto_generated_id  # Include the ID in the response
+                    'data_id': auto_generated_id
                 }
 
-                # Replace the 'user_id' and 'data_id' fields in Firestore
+                # Update the document with 'data_id'
                 expenses_ref.document(auto_generated_id).set({
-                    'user_id': user_id['user_id'],
-                    'data_id': auto_generated_id
+                    'data_id': auto_generated_id,
                     # Add other fields as needed
                 }, merge=True)
 
@@ -111,6 +118,7 @@ def add_expense():
     else:
         return jsonify({'message': 'Missing Authorization header'})
 
+################################################################################
 
 @app.route('/view_expenses')
 def view_expenses():
