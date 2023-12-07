@@ -4,8 +4,10 @@ from io import StringIO
 from waitress import serve
 import firebase_admin
 from firebase_admin import credentials, auth, db, firestore
+from flask_cors import CORS
 
 app = Flask(__name__, static_url_path='/static')
+CORS(app)
 
 cred = credentials.Certificate('firebase-admin.json')
 firebase_admin.initialize_app(cred)

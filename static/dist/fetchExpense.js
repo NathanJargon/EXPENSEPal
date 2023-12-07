@@ -12,7 +12,7 @@ function fetchAndUpdateExpenses() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Fetched data:", data);
+                    //console.log("Fetched data:", data);
                     tableBody.innerHTML = ''; // Clear the loading indicator
                 
                     if (data.user_expenses) { // Check if data.user_expenses is defined
