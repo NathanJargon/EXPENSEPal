@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",(function(){setTimeout((function(){document.querySelectorAll(".expense-date").forEach((function(t){var e=t.textContent,n=new Date(e).toLocaleDateString("en-GB",{year:"2-digit",month:"2-digit",day:"2-digit"});t.textContent=n}))}),300)}));

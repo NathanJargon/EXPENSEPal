@@ -1,0 +1,1 @@
+()=>{const e=({apiKey:"AIzaSyAN87hqf7cR_Yt6kYlLGKzd89pagAZCIaM",authDomain:"expenses-tracker-6afca.firebaseapp.com",projectId:"expenses-tracker-6afca",storageBucket:"expenses-tracker-6afca.appspot.com",messagingSenderId:"628383826563",appId:"1:628383826563:web:d63c8c7c90b9e477a9d1b6",measurementId:"G-ETLG0J4PFT"});const a = getAnalytics(e); const analytics = initializeApp(app)}
