@@ -63,8 +63,8 @@ function deleteExpense(expenseUid) {
                     const id_Token = idToken;
                     document.cookie = 'your_firebase_cookie_name=' + id_Token;
                     //console.log(user.uid);
-
-                    fetch(`/delete_expense/${expenseUid}`, {
+                    //console.log(expenseUid)
+                    fetch(`/delete_expense/${user.email}/${expenseUid}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': 'Bearer ' + id_Token,

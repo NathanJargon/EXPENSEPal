@@ -70,7 +70,7 @@ def get_expenses():
         expense_data = expense.to_dict()
         expenses_data.append(expense_data)
         
-    print("Fetched expenses:", expenses_data)
+    #print("Fetched expenses:", expenses_data)
 
     return jsonify({'user_expenses': expenses_data})
 
@@ -173,19 +173,20 @@ def fetch_expenses():
     return rows"""
 
 
-@app.route('/delete_expense/<expense_uid>', methods=['DELETE'])
-def delete_expense(expense_uid):
-    print("Received expense_uid:", expense_uid)
+@app.route('/delete_expense/<user_email>/<expense_uid>', methods=['DELETE'])
+def delete_expense(user_email, expense_uid):
+    print("Received user_email and expense_uid:", user_email, expense_uid)
     try:
         # Initialize the Firestore client
         db = firestore.client()
 
-        # Replace 'expenses' with the name of your Firestore collection
-        expenses_ref = db.collection('expenses')
-        print("Attempting to delete document:", expense_uid)
+        # Navigate to the specific user's expenses
+        user_expenses_ref = db.collection('expenses').document(user_email).collection('user_expenses')
 
-        # Delete the expense with the given expense_uid
-        result = expenses_ref.document(expense_uid).delete()
+        print("Attempting to delete document:", expense_uid)
+        result = user_expenses_ref.document(expense_uid).delete()
+        print("Delete result:", result)
+
         if result is not None:
             print("Expense deleted successfully:", result)
             return jsonify({'message': 'Expense deleted successfully'})
@@ -195,6 +196,7 @@ def delete_expense(expense_uid):
     except Exception as e:
         print(f'Error deleting expense: {str(e)}')
         return jsonify({'message': f'Error deleting expense: {str(e)}'}, 500)
+
 
 
 @app.route('/', methods=['GET', 'POST'])
