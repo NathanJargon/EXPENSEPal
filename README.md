@@ -1,8 +1,8 @@
-# Personal Finance Tracker
+# ExpensePal
 
 ## Overview
 
-The Personal Finance Tracker is a comprehensive web application designed to assist users in managing their expenses and gaining insights into their financial habits. The application integrates both front-end and back-end functionalities, utilizes Firebase for authentication, and employs a simple yet effective user interface.
+ExpensePal is a comprehensive web application designed to assist users in managing their expenses and gaining insights into their financial habits. The application integrates both front-end and back-end functionalities, utilizes Firebase for authentication, and employs a simple yet effective user interface.
 
 ## Features
 
@@ -31,9 +31,9 @@ The Personal Finance Tracker is a comprehensive web application designed to assi
 
 To use the Personal Finance Tracker:
 
-1. Clone this repository to your local machine.
+1. Clone this repository to your local machine (don't forget to fork!).
 2. Install the required dependencies using `pip install -r requirements.txt`.
-3. Run the application using `python app.py`.
+3. Run the application using "flask run".
 4. Access the application in your web browser at `http://localhost:8080`.
 
 ## Contribution
