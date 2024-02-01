@@ -21,17 +21,23 @@
         }
         
 
-        /* Sidebar Styles */
         .sidebar {
             position: fixed;
             top: 0;
             left: -400px; /* Initially hidden */
-            width: 400px;
+            width: 80%; /* Set a larger width for small devices */
             height: 100%;
             background-color: #0b0c10;
             color: #fff;
             transition: left 0.3s ease-in-out; 
             z-index: 999;
+        }
+        
+        /* Adjust the width for larger devices */
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 20%; /* Set a smaller width for larger devices */
+            }
         }
 
         /* New CSS Class for Transition */
@@ -229,7 +235,7 @@
 
 <!-- Sidebar -->
 <body style="background-color: black;">
-    <nav class="sidebar col-md-2 d-none d-md-block">
+    <nav class="sidebar d-md-block">
         <div class="position-sticky">
             <ul class="nav flex-column">
                 <li class="nav-item">
