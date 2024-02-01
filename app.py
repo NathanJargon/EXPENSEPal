@@ -9,7 +9,7 @@ from flask_cors import CORS
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
 
-cred = credentials.Certificate('firebase-admin.json')
+cred = credentials.Certificate('firebase-admin.json') # if using PythonAnywhere, do pwd to get the full path. (full path/firebase-admin.json)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -251,5 +251,5 @@ def upload_csv():
 
     return render_template('upload.html')
 
-if __name__ == '__main__':
+if __name__ == '__main__': # if using PythonAnywhere, remove this line
     app.run(debug=True)
