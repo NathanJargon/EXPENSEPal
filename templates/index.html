@@ -416,34 +416,7 @@
     <script src="../static/dist/fetchExpense.js"></script>
     <script src="../static/dist/dateChange.js"></script>
     
-    <script>
-        function updateTotal() {
-            // Get all the expense rows
-            const expenseRows = document.querySelectorAll('table tbody tr');
-            console.log(expenseRows);
-        
-            // Initialize the total
-            let total = 0;
-        
-            // Loop through each row
-            for (let i = 0; i < expenseRows.length; i++) {
-                // Get the expense amount (assuming it's in the fourth column, adjust if necessary)
-                const expenseAmountText = expenseRows[i].querySelector('td:nth-child(4)').textContent;
-                const expenseAmount = parseFloat(expenseAmountText);
-        
-                // Check if the amount is a valid number and an integer
-                if (!isNaN(expenseAmount) && Number.isInteger(expenseAmount)) {
-                    // Add the amount to the total
-                    total += expenseAmount;
-                }
-            }
-        
-            // Display the total with two decimal places
-            const totalElement = document.getElementById('total');
-            const totalSpan = totalElement.querySelector('.total-span');
-            totalSpan.textContent = total.toFixed(2); // Format as a decimal with 2 decimal places
-        }
-    </script>
+
 
     <script>
         $(document).ready(function() {
