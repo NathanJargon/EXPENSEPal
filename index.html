@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+  />  
+    <title>Expenses Tracker</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            /*background-color: #0b0c10;*/
+            background-color: white;
+            margin: 0;
+            padding: 0;
+        }
+        
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -400px; /* Initially hidden */
+            width: 400px;
+            height: 100%;
+            background-color: #0b0c10;
+            color: #fff;
+            transition: left 0.3s ease-in-out; /* Add smooth slide transition */
+            z-index: 999;
+        }
+
+        /* New CSS Class for Transition */
+        .sidebar-visible {
+            left: 0;
+        }
+
+        .sidebar a {
+            margin-top: 10px;
+            padding: 15px;
+            text-decoration: none;
+            color: #fff;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            background-color: #555;
+        }
+        /* Style for the file input */
+        .custom-file-input {
+            display: none; /* Hide the default file input */
+        }
+    
+        .custom-file-label {
+            text-align: center;
+            background-color: #007BFF; /* Change background color for the label */
+            color: #fff; /* Change text color for the label */
+            border: 1px solid #007BFF; /* Add border for the label */
+            border-radius: 5px; /* Add rounded corners */
+            padding: 5px 10px; /* Add padding to the label */
+            cursor: pointer; /* Change cursor on hover */
+        }
+    
+        .custom-file-label::after {
+            opacity: 0;
+            content: "Browse"; /* Change the text for the label's pseudo-element */
+        }
+    
+        /* Style for the file input on hover */
+        .custom-file-input:hover + .custom-file-label {
+            background-color: #0056b3; /* Change background color on hover */
+            border-color: #0056b3; /* Change border color on hover */
+        }
+
+                /* CSS for the overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .overlay-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .form-group, .mb-3, th, td{
+            color: #c5c6c7;
+            /*color: black;*/
+        }
+        
+        #loginOverlay, #signupOverlay {
+            display: none;
+        }
+        @keyframes turnRed {
+            0% {
+                background-color: #fff; /* Start with white background */
+            }
+            50% {
+                background-color: red; /* Change to red at the midpoint of animation */
+            }
+            100% {
+                background-color: #fff; /* End with white background */
+            }
+        }
+        
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            75% {
+                transform: translateX(-5px);
+            }
+            100% {
+                transform: translateX(5px);
+            }
+        }
+
+        #userName{
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            text-decoration: underline;
+        }
+
+        .mb-3{
+            text-decoration: underline;
+        }
+
+        /* CSS for the vertical line separator */
+        .vertical-line {
+            border-left: 2px solid #1f2833; /* Adjust the color and thickness as needed */
+            height: 100%; /* Adjust the height to span the entire height of the sections */
+            margin-left: 570px; /* Adjust the margin to control the gap between the sections */
+            position: absolute;
+        }
+        
+        /* Add border and border-radius to the container */
+        .container {
+            border: 1px solid #ccc; /* Add a border */
+            border-radius: 10px; /* Set the border radius to 10px */
+            padding: 20px; /* Add some padding for better appearance */
+            margin-top: 70px;
+
+            /* Add a circle to the upper-left corner */
+            background-image: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.2) 50%, transparent 50%), 
+                             radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.2) 50%, transparent 50%),
+                             radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.2) 50%, transparent 50%),
+                             radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.2) 50%, transparent 50%);
+            background-size: 100px 100px; /* Adjust the size of the circles */
+            background-position: 0 0, 100% 0, 0 100%, 100% 100%; /* Position the circles in corners */
+            background-repeat: no-repeat; /* Ensure they don't repeat */
+        }
+
+        /* Style for the delete button to make it smaller */
+        .delete-button-small {
+            padding: 1px 5px; /* Adjust the padding to make the button smaller */
+            font-size: 10px; /* Adjust the font size to make the text smaller */
+        }
+
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 1001;
+          }
+
+          #light-icon, #dark-icon {
+            font-size: 24px; /* Adjust the size as needed */
+          }
+          
+          #light-icon {
+            display: none;
+            color: black;
+          }
+          
+          #dark-icon {
+            color: white;
+          }
+          
+        .overlayscheme {
+            color: black;
+        }
+        
+    </style>
+</head>
+<body style="background-color: black;">
+    <nav class="sidebar col-md-2 d-none d-md-block">
+        <div class="position-sticky">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <span class="nav-link" id="userName">User</span>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Expenses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Reports
+                    </a>
+                </li>
+                <li class="nav-item" id="loginLogout">
+                    <a class="nav-link" href="#" id="loginLogoutLink">Login</a>
+                </li>                
+            </ul>
+        </div>
+    </nav>
+
+    <!--Log in-->
+    <div class="overlay" id="loginOverlay">
+        <div class="overlay-content">
+            <h2>Login</h2>
+            <form>
+                <div class="form-group">
+                    <label class="overlayscheme" for="email">Email:</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="overlayscheme" for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="button" id="login-button" class="btn btn-primary btn-block">Log In</button>
+                <button type="button" id="closeOverlay" class="btn btn-primary btn-block">Close</button>
+                <a class="nav-link" href="#" id="signupLink">No Account, Sign Up</a>
+            </form>
+        </div>
+    </div>
+
+    <!--Sign Up-->
+    <div class="overlay" id="signupOverlay">
+        <div class="overlay-content">
+            <h2>Sign Up</h2>
+            <form>
+                <div class="form-group">
+                    <label class="overlayscheme" for="signupEmail">Email:</label>
+                    <input type="email" id="signupEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="overlayscheme" for="signupPassword">Password:</label>
+                    <input type="password" id="signupPassword" class="form-control" required>
+                </div>
+                <button type="button" id="signup-button" class="btn btn-success btn-block">Sign Up</button>
+                <button type="button" id="closeSignUpOverlay" class="btn btn-success btn-block">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dark and Light Mode Icon -->
+    <div class="mode-toggle" id="mode-toggle">
+        <i class="fas fa-sun" id="light-icon" style="display: none;"></i>
+        <i class="fas fa-moon" id="dark-icon" style="display: block;"></i>
+      </div>
+      
+      
+    <!-- Remove style if you want it all-black -->
+    <div class="container" id="container" style="background-color: black; padding: 20px; border-radius: 20px; border-width: 10px; border-color: white;">
+        <div class="row">
+            <div class="col-md-6">
+                <h1 class="mt-4 mb-3 text-center">Add Expense</h1>
+                <form id="expense-form" method="POST">
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" name="description" class="form-control"  required maxlength="25">
+                        <small class="form-text text-muted">Maximum 25 characters, required</small>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount:</label>
+                        <input type="number" name="amount" step="0.01" class="form-control" required min="0.1" max="10000">
+                        <small class="form-text text-muted">Amount of 0.1 to 10,000, required</small>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <input type="text" name="category" class="form-control" required maxlength="10">
+                        <small class="form-text text-muted">Maximum 10 characters, required</small>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" id="submit" class="btn btn-primary btn-block">Add Expense</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="custom-file">
+                                <input type="file" id="csvFileInput" accept=".csv" class="custom-file-input">
+                                <label class="custom-file-label" for="csvFileInput">Choose CSV file</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+
+            </div>
+
+            <!-- The vertical line itself :> 
+            <div class="vertical-line"></div>-->
+
+            <div class="col-md-6">
+                <h1 class="mt-4 mb-3 text-center" style="padding-bottom:30px;">Expense History</h1>
+                <div style="max-height: 650px; overflow: auto;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expense-table-body">
+                        <!-- Expense rows will be dynamically added here -->
+                    </tbody>                      
+                </table>
+                <div class="col-md-6">
+                    <div class="mt-4 mb-3 text-right" style="text-decoration: none; margin-left: 185%;">Total: <span id="total" class="total-span">0.00</span></p></div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script> 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Flask Relative Path     -->
+    <script src="{{ url_for('serve_static', filename='dist/firebase-config.bundle.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/firebase-import.bundle.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/firebase-auth.bundle.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/log-sign-auth.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/userName.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/loginOverlay.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/logoutOverlay.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/dateChange.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/dark-light-mode.js') }}"></script>
+    <script src="{{ url_for('serve_static', filename='dist/signupOverlay.js') }}"></script>
+
+    
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
+        const firebaseConfig = {
+            apiKey: "AIzaSyAN87hqf7cR_Yt6kYlLGKzd89pagAZCIaM",
+            authDomain: "expenses-tracker-6afca.firebaseapp.com",
+            projectId: "expenses-tracker-6afca",
+            storageBucket: "expenses-tracker-6afca.appspot.com",
+            messagingSenderId: "628383826563",
+            appId: "1:628383826563:web:d63c8c7c90b9e477a9d1b6",
+            measurementId: "G-ETLG0J4PFT"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        firebase.initializeApp(firebaseConfig); //Very Important Code
+    </script>
+
+    <!-- Github/Apache Relative Path
+    <script src="./bundle/firebase-config.bundle.js"></script>
+    <script src="./bundle/firebase-import.bundle.js"></script>
+    <script src="./bundle/firebase-auth.bundle.js"></script>
+    <script src="./bundle/log-sign-auth.bundle.js"></script>
+    <script src="./bundle/userName.bundle.js"></script>
+    <script src="./bundle/loginOverlay.bundle.js"></script>
+    <script src="./bundle/logoutOverlay.bundle.js"></script>
+    <script src="./bundle/dark-light-mode.bundle.js"></script>
+    <script src="./bundle/signupOverlay.bundle.js"></script>
+    <script src="./bundle/addExpense.bundle.js"></script>
+    <script src="./bundle/fetchExpense.bundle.js"></script>
+    <script src="./bundle/dateChange.bundle.js"></script>
+ -->
+    
+    <script>
+        function updateTotal() {
+            // Get all the expense rows
+            const expenseRows = document.querySelectorAll('table tbody tr');
+            console.log(expenseRows);
+        
+            // Initialize the total
+            let total = 0;
+        
+            // Loop through each row
+            for (let i = 0; i < expenseRows.length; i++) {
+                // Get the expense amount (assuming it's in the fourth column, adjust if necessary)
+                const expenseAmountText = expenseRows[i].querySelector('td:nth-child(4)').textContent;
+                const expenseAmount = parseFloat(expenseAmountText);
+        
+                // Check if the amount is a valid number and an integer
+                if (!isNaN(expenseAmount) && Number.isInteger(expenseAmount)) {
+                    // Add the amount to the total
+                    total += expenseAmount;
+                }
+            }
+        
+            // Display the total with two decimal places
+            const totalElement = document.getElementById('total');
+            const totalSpan = totalElement.querySelector('.total-span');
+            totalSpan.textContent = total.toFixed(2); // Format as a decimal with 2 decimal places
+        }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            const sidebar = $('.sidebar');
+            const threshold = 200;
+
+            $(document).mousemove(function(e) {
+                const mouseX = e.pageX;
+
+                if (mouseX < threshold) {
+                    sidebar.addClass('sidebar-visible');
+                } else {
+                    sidebar.removeClass('sidebar-visible');
+                }
+            });
+        });
+    </script>
+    <script>
+        
+        function updateTotal(expenses) {
+            // Calculate the total based on the expenses and update the total element
+            const total = expenses.reduce((acc, expense) => acc + parseFloat(expense.amount), 0);
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+    </script>
+</body>
+</html>
